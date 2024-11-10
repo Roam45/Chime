@@ -28,7 +28,7 @@ const postsContainer = document.getElementById('posts-container');
 loginBtn.addEventListener('click', () => {
     const email = prompt("Enter your email:");
     const password = prompt("Enter your password:");
-    
+
     auth.signInWithEmailAndPassword(email, password)
         .then(userCredential => {
             const user = userCredential.user;
@@ -40,7 +40,7 @@ loginBtn.addEventListener('click', () => {
 signupBtn.addEventListener('click', () => {
     const email = prompt("Enter your email:");
     const password = prompt("Enter your password:");
-    
+
     auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
             const user = userCredential.user;
@@ -74,33 +74,43 @@ postBtn.addEventListener('click', () => {
     const message = postInput.value;
     if (message.trim()) {
         firestore.collection('posts').add({
-            message: message,
-            uid: auth.currentUser.uid,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            message: message,  // The content of the post
+            uid: auth.currentUser.uid,  // User ID of the poster
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()  // Timestamp when the post was created
         })
         .then(() => {
-            postInput.value = '';
-            loadPosts();
+            postInput.value = '';  // Clear the input field
+            loadPosts();  // Reload the posts
         })
-        .catch(error => alert(error.message));
+        .catch(error => alert(error.message));  // Handle errors
     }
 });
 
-// Load posts
+// Load posts from Firestore
 function loadPosts() {
     firestore.collection('posts')
-        .orderBy('timestamp', 'desc')
+        .orderBy('timestamp', 'desc')  // Order by timestamp in descending order (latest posts first)
         .get()
         .then(snapshot => {
-            postsContainer.innerHTML = '';
+            postsContainer.innerHTML = '';  // Clear existing posts
             snapshot.forEach(doc => {
-                const post = doc.data();
+                const post = doc.data();  // Get the data of the current post
                 const postElement = document.createElement('div');
                 postElement.classList.add('post');
-                postElement.textContent = post.message;
-                postsContainer.appendChild(postElement);
+                
+                // Get user info (you can customize this to show displayName or email)
+                const user = auth.currentUser;
+                const userName = user.displayName || user.email;
+                
+                const postContent = `
+                    <p><strong>${userName}</strong> says:</p>
+                    <p>${post.message}</p>
+                `;
+                postElement.innerHTML = postContent;
+                postsContainer.appendChild(postElement);  // Append the post to the container
             });
-        });
+        })
+        .catch(error => alert(error.message));  // Handle errors
 }
 
 // Listen for authentication state changes
