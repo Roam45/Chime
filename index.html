@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chime - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Chime</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+            <a href="register.html">Register</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Welcome to Chime</h2>
+        
+        <!-- Video Upload Section -->
+        <section id="video-upload">
+            <h3>Upload a Video</h3>
+            <input type="file" id="videoInput" accept="video/*">
+            <button onclick="uploadVideo()">Upload Video</button>
+            <div id="video-feedback"></div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat">
+            <h3>Chat</h3>
+            <textarea id="chatInput" placeholder="Type your message..."></textarea>
+            <button onclick="sendMessage()">Send</button>
+
+            <h4>Messages</h4>
+            <div id="messages"></div>
+        </section>
+
+        <!-- Logout Button -->
+        <button id="logout" onclick="logout()">Logout</button>
+    </main>
+
+    <script src="firebase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

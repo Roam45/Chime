@@ -1,0 +1,196 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body and Header */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #67b26f, #4ca2cd); /* Linear Gradient Background */
+    color: white;
+    padding: 20px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+header {
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    padding: 15px;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    animation: slideDown 1s ease-out;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+}
+
+header nav {
+    margin-top: 15px;
+}
+
+header nav a {
+    color: white;
+    margin: 0 20px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+header nav a:hover {
+    color: #67b26f; /* Green highlight on hover */
+}
+
+/* Main Content */
+main {
+    margin-top: 40px;
+    text-align: center;
+}
+
+input[type="email"], input[type="password"], textarea {
+    padding: 10px;
+    margin: 15px;
+    width: 80%;
+    max-width: 350px;
+    font-size: 16px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+input[type="email"]:focus, input[type="password"]:focus, textarea:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+button {
+    padding: 12px 25px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+    transform: translateY(-3px); /* Hover effect */
+}
+
+/* Feedback and Error Messages */
+#register-success, #login-error, #register-error {
+    margin-top: 20px;
+    font-size: 1rem;
+}
+
+#register-error, #login-error {
+    color: red;
+}
+
+#register-success {
+    color: green;
+}
+
+/* Video Upload Section */
+#video-upload {
+    margin-top: 40px;
+    animation: fadeIn 1.5s ease-out;
+}
+
+#video-feedback {
+    margin-top: 15px;
+}
+
+/* Chat Section */
+#chat {
+    margin-top: 40px;
+    text-align: center;
+}
+
+#chatInput {
+    padding: 12px;
+    width: 80%;
+    max-width: 400px;
+    font-size: 16px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+#chatInput:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+#messages {
+    margin-top: 20px;
+    text-align: left;
+    padding: 15px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    animation: fadeIn 1.5s ease-out;
+}
+
+#messages div {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+}
+
+#messages div:hover {
+    transform: translateX(5px); /* Hover effect for messages */
+}
+
+/* Button Animations */
+@keyframes slideDown {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Logout Button */
+#logout {
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+#logout:hover {
+    background-color: #c9302c;
+    transform: translateY(-3px); /* Hover effect */
+}

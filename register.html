@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chime - Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Chime</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+            <a href="register.html">Register</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="register-section">
+            <h2>Register for Chime</h2>
+            <input type="email" id="newEmail" placeholder="Email" required>
+            <input type="password" id="newPassword" placeholder="Password" required>
+            <button onclick="register()">Register</button>
+            <p id="register-success" style="color:green; display:none;">Registration successful! Redirecting...</p>
+            <p id="register-error" style="color:red; display:none;">Email already taken or invalid input.</p>
+        </section>
+    </main>
+
+    <script src="firebase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
