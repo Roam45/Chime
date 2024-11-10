@@ -3,45 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chime - Home</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Chime - Social Media</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Chime</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="login.html">Login</a>
-            <a href="register.html">Register</a>
-        </nav>
-    </header>
+    <div class="auth-container">
+        <h1>Chime - Social Media</h1>
+        <div id="auth-section">
+            <button id="login-btn">Login</button>
+            <button id="signup-btn">Sign Up</button>
+            <div id="user-info" style="display:none;">
+                <p>Welcome, <span id="user-name"></span></p>
+                <button id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </div>
 
-    <main>
-        <h2>Welcome to Chime</h2>
-        
-        <!-- Video Upload Section -->
-        <section id="video-upload">
-            <h3>Upload a Video</h3>
-            <input type="file" id="videoInput" accept="video/*">
-            <button onclick="uploadVideo()">Upload Video</button>
-            <div id="video-feedback"></div>
-        </section>
+    <div id="post-section" style="display:none;">
+        <textarea id="post-input" placeholder="What's on your mind?" rows="4" cols="50"></textarea>
+        <button id="post-btn">Post</button>
+        <div id="posts-container"></div>
+    </div>
 
-        <!-- Chat Section -->
-        <section id="chat">
-            <h3>Chat</h3>
-            <textarea id="chatInput" placeholder="Type your message..."></textarea>
-            <button onclick="sendMessage()">Send</button>
-
-            <h4>Messages</h4>
-            <div id="messages"></div>
-        </section>
-
-        <!-- Logout Button -->
-        <button id="logout" onclick="logout()">Logout</button>
-    </main>
-
-    <script src="firebase.js"></script>
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
