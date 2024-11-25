@@ -5,84 +5,159 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chime - Social Media</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
+    /* General Reset */
+    body, h1, p, button, input, textarea {
       margin: 0;
       padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: 'Arial', sans-serif;
     }
-    h1 {
-      color: #4caf50;
-    }
-    #signup-form, #login-form {
-      margin: 20px;
-      text-align: center;
-    }
-    #profile {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #posts {
-      width: 80%;
-      margin-top: 20px;
-    }
-    .post {
-      background-color: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-    .post h3 {
+
+    body {
+      background-color: #f5f7fa;
       color: #333;
-      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding-top: 70px; /* For header spacing */
     }
-    .post p {
-      margin: 10px 0;
-    }
-    .post img, .post video {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 10px;
-    }
-    .like-comment-section {
+
+    header {
+      width: 100%;
+      background-color: #4CAF50;
+      padding: 15px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
       display: flex;
       justify-content: space-between;
-      margin-top: 10px;
+      align-items: center;
     }
-    .comments {
-      margin-top: 15px;
-      margin-left: 20px;
-      border-left: 2px solid #eee;
-      padding-left: 15px;
+
+    header h1 {
+      color: white;
+      font-size: 1.6em;
     }
-    input[type="file"] {
-      margin: 10px 0;
+
+    .btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
     }
-    textarea {
-      width: 100%;
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+    /* Profile & Auth Forms */
+    #signup-form, #login-form {
+      margin-top: 100px; /* Account for fixed header */
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    #profile {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    #profile img {
+      width: 80px;
       height: 80px;
-      border-radius: 8px;
+      border-radius: 50%;
+    }
+
+    /* Post Section */
+    #posts {
+      width: 90%;
+      max-width: 800px;
+      margin-top: 20px;
+    }
+
+    .post {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .post h3 {
+      margin-bottom: 10px;
+      font-size: 1.1em;
+      color: #4CAF50;
+    }
+
+    .post p {
+      font-size: 1em;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .post img, .post video {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    .post-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .like-comment-section {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: 14px;
+      color: #4CAF50;
+    }
+
+    .comments {
+      margin-left: 20px;
+      margin-top: 10px;
+      padding-left: 15px;
+      border-left: 2px solid #f0f0f0;
+    }
+
+    .comment-input {
+      margin-top: 10px;
       padding: 10px;
+      border-radius: 10px;
+      width: 100%;
       border: 1px solid #ddd;
     }
-    .btn {
-      background-color: #4caf50;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+
+    /* Media Upload */
+    input[type="file"], textarea {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to Chime!</h1>
+  <header>
+    <h1>Chime</h1>
+    <div>
+      <button class="btn" id="logout-btn" onclick="logOut()" style="display:none;">Log Out</button>
+    </div>
+  </header>
 
   <!-- Sign Up Form -->
   <div id="signup-form">
@@ -99,16 +174,17 @@
   </div>
 
   <!-- Profile Section -->
-  <div id="profile" style="display: none;">
-    <input type="file" id="profile-pic-input" onchange="uploadProfilePicture(event)" />
+  <div id="profile">
     <img id="profile-pic" src="default.jpg" alt="Profile Picture" />
-    <button class="btn" onclick="logOut()">Log Out</button>
+    <button class="btn" onclick="loadProfile()">Edit Profile</button>
   </div>
 
-  <!-- Post Section -->
-  <textarea id="post-text" placeholder="What's happening?"></textarea>
-  <input type="file" id="video-input" accept="video/*" onchange="uploadVideo(event)" />
-  <button class="btn" onclick="createPost()">Post</button>
+  <!-- Create Post Section -->
+  <div id="create-post">
+    <textarea id="post-text" placeholder="What's on your mind?"></textarea>
+    <input type="file" id="video-input" accept="video/*" onchange="uploadVideo(event)" />
+    <button class="btn" onclick="createPost()">Post</button>
+  </div>
 
   <!-- Displaying Posts -->
   <div id="posts"></div>
@@ -142,8 +218,10 @@
       const email = document.getElementById("signup-email").value;
       const password = document.getElementById("signup-password").value;
       try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await auth.createUserWithEmailAndPassword(email, password);
         alert("Signed Up Successfully!");
+        document.getElementById("signup-form").style.display = "none";
+        document.getElementById("login-form").style.display = "none";
         loadProfile();
       } catch (error) {
         alert(error.message);
@@ -157,6 +235,7 @@
       try {
         await auth.signInWithEmailAndPassword(email, password);
         alert("Logged In Successfully!");
+        document.getElementById("login-form").style.display = "none";
         loadProfile();
       } catch (error) {
         alert(error.message);
@@ -170,133 +249,86 @@
       loadProfile();
     }
 
-    // Upload Profile Picture
-    async function uploadProfilePicture(event) {
-      const file = event.target.files[0];
-      const storageRef = storage.ref(`profile_pictures/${auth.currentUser.uid}`);
-      const uploadTask = storageRef.put(file);
-      
-      uploadTask.on('state_changed', (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log(`Upload is ${progress}% done`);
-      }, (error) => {
-        console.error("Error uploading image:", error);
-      }, async () => {
-        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-        await db.collection("users").doc(auth.currentUser.uid).update({ profilePicture: downloadURL });
-        document.getElementById("profile-pic").src = downloadURL;
-        alert("Profile picture updated!");
-      });
-    }
-
-    // Upload Video
-    async function uploadVideo(event) {
-      const file = event.target.files[0];
-      const storageRef = storage.ref(`posts/videos/${auth.currentUser.uid}_${file.name}`);
-      const uploadTask = storageRef.put(file);
-
-      uploadTask.on('state_changed', (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log(`Upload is ${progress}% done`);
-      }, (error) => {
-        console.error("Error uploading video:", error);
-      }, async () => {
-        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-        console.log("Video uploaded at: ", downloadURL);
-        return downloadURL;
-      });
-    }
-
-    // Create Post
-    async function createPost() {
-      const postText = document.getElementById("post-text").value;
-      const videoURL = await uploadVideo(document.getElementById("video-input"));
+    // Load Profile
+    async function loadProfile() {
       const user = auth.currentUser;
+      if (user) {
+        const userProfile = await db.collection("users").doc(user.uid).get();
+        const profilePicture = userProfile.data()?.profilePicture || "default.jpg";
+        document.getElementById("profile-pic").src = profilePicture;
+        document.getElementById("profile").style.display = "block";
+        document.getElementById("signup-form").style.display = "none";
+        document.getElementById("login-form").style.display = "none";
+        document.getElementById("logout-btn").style.display = "inline";
+        loadPosts();
+      } else {
+        document.getElementById("profile").style.display = "none";
+        document.getElementById("signup-form").style.display = "block";
+        document.getElementById("login-form").style.display = "block";
+        document.getElementById("logout-btn").style.display = "none";
+      }
+    }
 
-      const postRef = await db.collection("posts").add({
-        userId: user.uid,
-        username: user.email,  
-        text: postText,
-        videoURL: videoURL || "",  // Video URL is optional
-        likes: 0,
-        comments: [],
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    // Load Posts from Firestore
+    async function loadPosts() {
+      const postsContainer = document.getElementById("posts");
+      postsContainer.innerHTML = ''; // Clear existing posts
+
+      const querySnapshot = await db.collection("posts").orderBy("createdAt", "desc").get();
+      querySnapshot.forEach((doc) => {
+        const post = doc.data();
+        const postElement = document.createElement("div");
+        postElement.classList.add("post");
+
+        // Create post content
+        postElement.innerHTML = `
+          <h3>${post.username}</h3>
+          <p>${post.text}</p>
+          ${post.mediaUrl ? `<img src="${post.mediaUrl}" alt="Post Media" />` : ''}
+          <div class="post-footer">
+            <div class="like-comment-section">
+              <button onclick="likePost('${doc.id}')">Like</button>
+              <span>5 Comments</span>
+            </div>
+          </div>
+        `;
+
+        postsContainer.appendChild(postElement);
       });
+    }
 
-      console.log("Post created with ID: ", postRef.id);
+    // Create a New Post
+    async function createPost() {
+      const user = auth.currentUser;
+      const text = document.getElementById("post-text").value;
+      const mediaFile = document.getElementById("video-input").files[0];
+
+      if (!text && !mediaFile) return;
+
+      let mediaUrl = '';
+      if (mediaFile) {
+        const mediaRef = storage.ref().child('posts/' + mediaFile.name);
+        await mediaRef.put(mediaFile);
+        mediaUrl = await mediaRef.getDownloadURL();
+      }
+
+      const postData = {
+        text: text,
+        username: user.email,
+        mediaUrl: mediaUrl,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+
+      await db.collection("posts").add(postData);
+      document.getElementById("post-text").value = '';
       loadPosts();
     }
 
     // Like a Post
     async function likePost(postId) {
-      const postRef = db.collection("posts").doc(postId);
-      await postRef.update({
-        likes: firebase.firestore.FieldValue.increment(1)
-      });
-      loadPosts();
+      // Implement the like functionality here
+      console.log(`Liked post with ID: ${postId}`);
     }
-
-    // Add Comment
-    async function addComment(postId) {
-      const commentText = prompt("Enter your comment:");
-      if (commentText) {
-        const postRef = db.collection("posts").doc(postId);
-        await postRef.update({
-          comments: firebase.firestore.FieldValue.arrayUnion(commentText)
-        });
-        loadPosts();
-      }
-    }
-
-    // Load Profile
-    function loadProfile() {
-      if (auth.currentUser) {
-        document.getElementById("profile").style.display = "block";
-        document.getElementById("signup-form").style.display = "none";
-        document.getElementById("login-form").style.display = "none";
-        const userId = auth.currentUser.uid;
-        db.collection("users").doc(userId).get().then((doc) => {
-          if (doc.exists) {
-            const data = doc.data();
-            const profilePicture = data.profilePicture || "default.jpg";
-            document.getElementById("profile-pic").src = profilePicture;
-          }
-        });
-      } else {
-        document.getElementById("profile").style.display = "none";
-        document.getElementById("signup-form").style.display = "block";
-        document.getElementById("login-form").style.display = "block";
-      }
-    }
-
-    // Load Posts
-    function loadPosts() {
-      db.collection("posts").orderBy("timestamp", "desc").get().then((snapshot) => {
-        const postsContainer = document.getElementById("posts");
-        postsContainer.innerHTML = "";  // Clear current posts
-        snapshot.forEach((doc) => {
-          const post = doc.data();
-          const postId = doc.id;
-          const postElement = document.createElement("div");
-          postElement.classList.add("post");
-          postElement.innerHTML = `
-            <h3>${post.username}</h3>
-            <p>${post.text}</p>
-            ${post.videoURL ? `<video controls><source src="${post.videoURL}" type="video/mp4"></video>` : ""}
-            <div class="like-comment-section">
-              <button class="btn" onclick="likePost('${postId}')">Like (${post.likes})</button>
-              <button class="btn" onclick="addComment('${postId}')">Comment</button>
-            </div>
-            <div class="comments">
-              ${post.comments.map(comment => `<p>${comment}</p>`).join("")}
-            </div>
-          `;
-          postsContainer.appendChild(postElement);
-        });
-      });
-    }
-
-    auth.onAuthStateChanged(loadProfile);
   </script>
 </body>
 </html>
