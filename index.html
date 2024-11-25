@@ -20,9 +20,11 @@
       align-items: center;
       justify-content: flex-start;
       min-height: 100vh;
-      padding-top: 70px; /* For header spacing */
+      padding-top: 80px;
+      transition: background-color 0.3s ease-in-out;
     }
 
+    /* Header */
     header {
       width: 100%;
       background-color: #4CAF50;
@@ -34,58 +36,67 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     header h1 {
       color: white;
-      font-size: 1.6em;
+      font-size: 1.8em;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
 
     .btn {
       background-color: #4CAF50;
       color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
+      padding: 12px 25px;
+      border-radius: 30px;
       border: none;
       cursor: pointer;
       font-size: 14px;
+      transition: background-color 0.3s;
     }
 
     .btn:hover {
       background-color: #45a049;
     }
 
-    /* Profile & Auth Forms */
-    #signup-form {
-      margin-top: 100px; /* Account for fixed header */
-      text-align: center;
-      width: 90%;
-      max-width: 500px;
-      position: relative;
-      overflow: hidden;
-      height: 0;
-      transition: height 0.5s ease-out;
-    }
-
-    #signup-form.active {
-      height: 250px;
-    }
-
-    #signup-form input {
+    /* Sign-Up & Log-In Form */
+    #signup-form, #login-form {
+      margin-top: 120px;
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
+      max-width: 500px;
+      background-color: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.5s, transform 0.5s;
+    }
+
+    #signup-form.active, #login-form.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #signup-form input, #login-form input {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 20px;
       border-radius: 8px;
       border: 1px solid #ddd;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
     }
 
-    #login-form {
-      margin-top: 100px;
-      text-align: center;
-      width: 90%;
-      max-width: 500px;
+    #signup-form input:focus, #login-form input:focus {
+      border-color: #4CAF50;
+      outline: none;
     }
 
+    /* Profile Section */
     #profile {
       display: none;
       margin-top: 20px;
@@ -98,9 +109,31 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
+      margin-bottom: 10px;
     }
 
     /* Post Section */
+    #create-post {
+      margin-top: 20px;
+      text-align: center;
+      width: 90%;
+      max-width: 600px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #create-post textarea {
+      width: 100%;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      margin-bottom: 10px;
+      resize: vertical;
+    }
+
     #posts {
       width: 90%;
       max-width: 800px;
@@ -110,17 +143,23 @@
     .post {
       background-color: white;
       border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       padding: 15px;
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .post:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
 
     .post h3 {
       margin-bottom: 10px;
-      font-size: 1.1em;
+      font-size: 1.2em;
       color: #4CAF50;
     }
 
@@ -147,21 +186,6 @@
       align-items: center;
       font-size: 14px;
       color: #4CAF50;
-    }
-
-    .comments {
-      margin-left: 20px;
-      margin-top: 10px;
-      padding-left: 15px;
-      border-left: 2px solid #f0f0f0;
-    }
-
-    .comment-input {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      width: 100%;
-      border: 1px solid #ddd;
     }
 
     /* Media Upload */
@@ -243,9 +267,8 @@
       try {
         await auth.createUserWithEmailAndPassword(email, password);
         alert("Signed Up Successfully!");
-        document.getElementById("signup-form").classList.remove('active');
-        document.getElementById("signup-form").style.height = '0'; // Close form
-        loadProfile();
+        document.getElementById("signup-form").style.display = "none";
+        document.getElementById("login-form").style.display = "none";
       } catch (error) {
         alert(error.message);
       }
@@ -258,34 +281,19 @@
       try {
         await auth.signInWithEmailAndPassword(email, password);
         alert("Logged In Successfully!");
-        loadProfile();
+        document.getElementById("login-form").style.display = "none";
       } catch (error) {
         alert(error.message);
       }
     }
 
     // Log Out Function
-    async function logOut() {
-      await auth.signOut();
-      alert("Logged out successfully!");
-      loadProfile();
+    function logOut() {
+      auth.signOut();
+      document.getElementById("login-form").style.display = "block";
     }
 
-    // Load Profile
-    async function loadProfile() {
-      const user = auth.currentUser;
-      if (user) {
-        const userProfile = await db.collection("users").doc(user.uid).get();
-        const profilePicture = userProfile.data()?.profilePicture || "default.jpg";
-        document.getElementById("profile-pic").src = profilePicture;
-        document.getElementById("profile").style.display = "block";
-        document.getElementById("signup-form").style.display = "none";
-        document.getElementById("login-form").style.display = "none";
-        document.getElementById("logout-btn").style.display = "block";
-      }
-    }
-
-    // Create a New Post
+    // Create Post Function
     async function createPost() {
       const user = auth.currentUser;
       const text = document.getElementById("post-text").value;
@@ -311,7 +319,7 @@
       loadPosts();
     }
 
-    // Load Posts
+    // Load Posts Function
     async function loadPosts() {
       const postsContainer = document.getElementById("posts");
       postsContainer.innerHTML = "";
@@ -330,7 +338,16 @@
       });
     }
 
-    // Initialize View on Page Load
+    // Load Profile
+    function loadProfile() {
+      const user = auth.currentUser;
+      if (user) {
+        document.getElementById("profile").style.display = "block";
+        document.getElementById("profile-pic").src = "default.jpg"; // Add logic for actual profile image upload
+      }
+    }
+
+    // Initialize View
     window.onload = function() {
       loadPosts();
       loadProfile();
