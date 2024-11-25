@@ -56,8 +56,31 @@
     }
 
     /* Profile & Auth Forms */
-    #signup-form, #login-form {
+    #signup-form {
       margin-top: 100px; /* Account for fixed header */
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+      overflow: hidden;
+      height: 0;
+      transition: height 0.5s ease-out;
+    }
+
+    #signup-form.active {
+      height: 250px;
+    }
+
+    #signup-form input {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    #login-form {
+      margin-top: 100px;
       text-align: center;
       width: 90%;
       max-width: 500px;
@@ -159,7 +182,7 @@
     </div>
   </header>
 
-  <!-- Sign Up Form -->
+  <!-- Sign Up Form with Dropdown Effect -->
   <div id="signup-form">
     <input type="email" id="signup-email" placeholder="Email" required />
     <input type="password" id="signup-password" placeholder="Password" required />
@@ -220,8 +243,8 @@
       try {
         await auth.createUserWithEmailAndPassword(email, password);
         alert("Signed Up Successfully!");
-        document.getElementById("signup-form").style.display = "none";
-        document.getElementById("login-form").style.display = "none";
+        document.getElementById("signup-form").classList.remove('active');
+        document.getElementById("signup-form").style.height = '0'; // Close form
         loadProfile();
       } catch (error) {
         alert(error.message);
@@ -235,7 +258,6 @@
       try {
         await auth.signInWithEmailAndPassword(email, password);
         alert("Logged In Successfully!");
-        document.getElementById("login-form").style.display = "none";
         loadProfile();
       } catch (error) {
         alert(error.message);
@@ -259,42 +281,8 @@
         document.getElementById("profile").style.display = "block";
         document.getElementById("signup-form").style.display = "none";
         document.getElementById("login-form").style.display = "none";
-        document.getElementById("logout-btn").style.display = "inline";
-        loadPosts();
-      } else {
-        document.getElementById("profile").style.display = "none";
-        document.getElementById("signup-form").style.display = "block";
-        document.getElementById("login-form").style.display = "block";
-        document.getElementById("logout-btn").style.display = "none";
+        document.getElementById("logout-btn").style.display = "block";
       }
-    }
-
-    // Load Posts from Firestore
-    async function loadPosts() {
-      const postsContainer = document.getElementById("posts");
-      postsContainer.innerHTML = ''; // Clear existing posts
-
-      const querySnapshot = await db.collection("posts").orderBy("createdAt", "desc").get();
-      querySnapshot.forEach((doc) => {
-        const post = doc.data();
-        const postElement = document.createElement("div");
-        postElement.classList.add("post");
-
-        // Create post content
-        postElement.innerHTML = `
-          <h3>${post.username}</h3>
-          <p>${post.text}</p>
-          ${post.mediaUrl ? `<img src="${post.mediaUrl}" alt="Post Media" />` : ''}
-          <div class="post-footer">
-            <div class="like-comment-section">
-              <button onclick="likePost('${doc.id}')">Like</button>
-              <span>5 Comments</span>
-            </div>
-          </div>
-        `;
-
-        postsContainer.appendChild(postElement);
-      });
     }
 
     // Create a New Post
@@ -302,12 +290,10 @@
       const user = auth.currentUser;
       const text = document.getElementById("post-text").value;
       const mediaFile = document.getElementById("video-input").files[0];
+      let mediaUrl = "";
 
-      if (!text && !mediaFile) return;
-
-      let mediaUrl = '';
       if (mediaFile) {
-        const mediaRef = storage.ref().child('posts/' + mediaFile.name);
+        const mediaRef = storage.ref().child("posts/" + mediaFile.name);
         await mediaRef.put(mediaFile);
         mediaUrl = await mediaRef.getDownloadURL();
       }
@@ -320,14 +306,34 @@
       };
 
       await db.collection("posts").add(postData);
-      document.getElementById("post-text").value = '';
+      document.getElementById("post-text").value = "";
+      document.getElementById("video-input").value = "";
       loadPosts();
     }
 
-    // Like a Post
-    async function likePost(postId) {
-      // Implement the like functionality here
-      console.log(`Liked post with ID: ${postId}`);
+    // Load Posts
+    async function loadPosts() {
+      const postsContainer = document.getElementById("posts");
+      postsContainer.innerHTML = "";
+      const querySnapshot = await db.collection("posts").orderBy("createdAt", "desc").get();
+      querySnapshot.forEach((doc) => {
+        const post = doc.data();
+        const postElement = document.createElement("div");
+        postElement.classList.add("post");
+
+        postElement.innerHTML = `
+          <h3>${post.username}</h3>
+          <p>${post.text}</p>
+          ${post.mediaUrl ? `<img src="${post.mediaUrl}" alt="Post Media" />` : ""}
+        `;
+        postsContainer.appendChild(postElement);
+      });
+    }
+
+    // Initialize View on Page Load
+    window.onload = function() {
+      loadPosts();
+      loadProfile();
     }
   </script>
 </body>
