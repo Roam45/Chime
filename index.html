@@ -3,73 +3,251 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chime Games</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Chime - Social Media</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4fdf4;
+      color: #333;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #2e7d32; /* Green primary color */
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar h1 {
+      font-size: 24px;
+    }
+    .navbar button {
+      background-color: #1b5e20;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .navbar button:hover {
+      background-color: #43a047;
+    }
+
+    /* Main Layout */
+    .container {
+      display: flex;
+      height: calc(100vh - 60px); /* Full height minus navbar */
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #a5d6a7; /* Light green */
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      margin-bottom: 15px;
+    }
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #1b5e20;
+      font-size: 16px;
+      display: block;
+      padding: 8px 10px;
+      border-radius: 5px;
+    }
+    .sidebar ul li a:hover {
+      background-color: #2e7d32;
+      color: white;
+    }
+
+    /* Main Content */
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .post-form {
+      margin-bottom: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-form textarea {
+      width: 100%;
+      height: 80px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .post-form button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .post-form button:hover {
+      background-color: #43a047;
+    }
+
+    .post {
+      background: white;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .post h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: #2e7d32;
+    }
+
+    .post p {
+      margin: 0;
+      font-size: 16px;
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-xHxtA45RLADysSa2PuYyunH1bk3C18I",
+      authDomain: "gigibi.firebaseapp.com",
+      projectId: "gigibi",
+      storageBucket: "gigibi.appspot.com",
+      messagingSenderId: "491236320445",
+      appId: "1:491236320445:web:8f709c515c221551de43d4",
+      measurementId: "G-VFHBRGKN0C"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const loginButton = document.getElementById("login");
+    const logoutButton = document.getElementById("logout");
+    const postForm = document.getElementById("postForm");
+    const postContent = document.getElementById("postContent");
+    const postsDiv = document.getElementById("posts");
+
+    // Authentication
+    const provider = new GoogleAuthProvider();
+    loginButton.addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error(error.message);
+      }
+    });
+
+    logoutButton.addEventListener("click", async () => {
+      await auth.signOut();
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("welcome").textContent = `Welcome, ${user.displayName}`;
+        loginButton.style.display = "none";
+        logoutButton.style.display = "block";
+        loadPosts();
+      } else {
+        document.getElementById("welcome").textContent = "Welcome to Chime!";
+        loginButton.style.display = "block";
+        logoutButton.style.display = "none";
+      }
+    });
+
+    // Add Post
+    postForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (auth.currentUser) {
+        try {
+          await addDoc(collection(db, "posts"), {
+            content: postContent.value,
+            author: auth.currentUser.displayName,
+            timestamp: new Date(),
+          });
+          postContent.value = "";
+          loadPosts();
+        } catch (error) {
+          console.error("Error adding post:", error);
+        }
+      }
+    });
+
+    // Load Posts
+    async function loadPosts() {
+      postsDiv.innerHTML = ""; // Clear posts
+      const postsQuery = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+      const querySnapshot = await getDocs(postsQuery);
+      querySnapshot.forEach((doc) => {
+        const post = doc.data();
+        const postElement = document.createElement("div");
+        postElement.classList.add("post");
+        postElement.innerHTML = `
+          <h3>${post.author}</h3>
+          <p>${post.content}</p>
+        `;
+        postsDiv.appendChild(postElement);
+      });
+    }
+  </script>
 </head>
 <body>
-
-  <header>
+  <div class="navbar">
     <h1>Chime</h1>
-    <nav>
+    <div>
+      <span id="welcome">Welcome to Chime!</span>
+      <button id="login">Login</button>
+      <button id="logout" style="display: none;">Logout</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="sidebar">
       <ul>
         <li><a href="#">Home</a></li>
-        <li><a href="#games">Games</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Friends</a></li>
+        <li><a href="#">Settings</a></li>
       </ul>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <h2>Welcome to Chime!</h2>
-      <p>Discover fun and engaging games in one place.</p>
-      <a href="#games" class="cta-btn">Play Now!</a>
-    </section>
-
-    <section id="games" class="game-list">
-      <h2>Our Games</h2>
-      <div class="game-item">
-        <img src="tic-tac-toe-thumbnail.jpg" alt="Tic-Tac-Toe">
-        <h3>Tic-Tac-Toe</h3>
-        <p>Classic 3x3 grid game. Who will win, X or O?</p>
-        <a href="#">Play</a>
+    </div>
+    <div class="content">
+      <div class="post-form">
+        <form id="postForm">
+          <textarea id="postContent" placeholder="What's on your mind?" required></textarea>
+          <button type="submit">Post</button>
+        </form>
       </div>
-      <div class="game-item">
-        <img src="memory-card-thumbnail.jpg" alt="Memory Card Match">
-        <h3>Memory Card Match</h3>
-        <p>Flip the cards to find matching pairs!</p>
-        <a href="#">Play</a>
-      </div>
-      <div class="game-item">
-        <img src="snake-thumbnail.jpg" alt="Snake">
-        <h3>Snake</h3>
-        <p>Eat the food and grow the snake. Don't hit the walls!</p>
-        <a href="#">Play</a>
-      </div>
-      <div class="game-item">
-        <img src="pong-thumbnail.jpg" alt="Pong">
-        <h3>Pong</h3>
-        <p>Classic Pong - can you beat your opponent?</p>
-        <a href="#">Play</a>
-      </div>
-      <div class="game-item">
-        <img src="space-shooter-thumbnail.jpg" alt="Space Shooter">
-        <h3>Space Shooter</h3>
-        <p>Blast off into space and shoot down enemies!</p>
-        <a href="#">Play</a>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2024 Chime Games. All rights reserved.</p>
-    <ul>
-      <li><a href="#">Privacy Policy</a></li>
-      <li><a href="#">Terms of Service</a></li>
-    </ul>
-  </footer>
-
-  <script src="scripts.js"></script>
+      <div id="posts"></div>
+    </div>
+  </div>
 </body>
 </html>
